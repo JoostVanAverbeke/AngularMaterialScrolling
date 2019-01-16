@@ -1,0 +1,14 @@
+<h4>DataSource</h4>
+
+<cdk-virtual-scroll-viewport itemSize="20" class="gkz-viewport">
+  <div *cdkVirtualFor="let item of dataSource" class="item">{{item || 'Loading...'}}</div>
+</cdk-virtual-scroll-viewport>
+
+<h4>Observable data</h4>
+
+<button (click)="emitData()">Add item</button>
+<cdk-virtual-scroll-viewport class="gkz-viewport" [itemSize]="20">
+  <div *cdkVirtualFor="let item of observableData | async; let i = index" class="item">
+    Item #{{i}}: {{item}}
+  </div>
+</cdk-virtual-scroll-viewport>
