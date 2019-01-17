@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { DataSource, CollectionViewer } from '@angular/cdk/collections';
+import {Card} from './card';
+import {CardService} from './card.service';
 
 @Component({
   selector: 'app-spec-data',
@@ -8,8 +10,10 @@ import { DataSource, CollectionViewer } from '@angular/cdk/collections';
   styleUrls: ['./spec-data.component.scss']
 })
 export class SpecDataComponent {
-  dataSource = new MyDataSource();
-
+  dataSource: MyDataSource;
+  constructor(private cardService: CardService) {
+    this.dataSource = new MyDataSource(this.cardService);
+  }
   observableData = new BehaviorSubject<number[]>([]);
 
   emitData() {
@@ -19,19 +23,24 @@ export class SpecDataComponent {
   }
 }
 
-export class MyDataSource extends DataSource<string | undefined> {
+export class MyDataSource extends DataSource<Card | undefined> {
   private PAGE_SIZE = 10;
   private fetchedPages = new Set<number>();
 
-  private cachedData = Array.from<string>({ length: 1000 });
-  private dataStream = new BehaviorSubject<(string | undefined)[]>(this.cachedData);
+  private cachedData = Array.from<Card>({ length: 200 });
+  private dataStream = new BehaviorSubject<(Card | undefined)[]>(this.cachedData);
 
   private subscription = new Subscription();
 
-  connect(collectionViewer: CollectionViewer): Observable<(string | undefined)[]> {
+  constructor(private cardService: CardService) {
+    super();
+  }
+
+  connect(collectionViewer: CollectionViewer): Observable<(Card | undefined)[]> {
     this.subscription.add(collectionViewer.viewChange.subscribe(range => {
       const startPage = this.getPageForIndex(range.start);
       const endPage = this.getPageForIndex(range.end);
+      console.log('start page = ' + startPage + ', end page = ' + endPage);
       for (let i = startPage; i <= endPage; i++) {
         this.fetchPage(i);
       }
@@ -49,18 +58,9 @@ export class MyDataSource extends DataSource<string | undefined> {
   }
 
   private fetchPage(page: number) {
-    if (this.fetchedPages.has(page)) {
-      return;
-    }
-    this.fetchedPages.add(page);
-
-    // simulate fetching data from server
-    setTimeout(() => {
-      this.cachedData.splice(page * this.PAGE_SIZE, this.PAGE_SIZE,
-        ...Array.from({ length: this.PAGE_SIZE })
-          .map((_, i) => `Item #${page * this.PAGE_SIZE + i}`));
-
+    this.cardService.getCards(page).subscribe(cards => {
+      this.cachedData.concat(cards);
       this.dataStream.next(this.cachedData);
-    }, 2000);
+    });
   }
 }

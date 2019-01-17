@@ -1,7 +1,7 @@
 <h4>DataSource</h4>
 
 <cdk-virtual-scroll-viewport itemSize="20" class="gkz-viewport">
-  <div *cdkVirtualFor="let item of dataSource" class="item">{{item || 'Loading...'}}</div>
+  <div *cdkVirtualFor="let item of dataSource" class="item">{{ item.title || 'Loading...'}}</div>
 </cdk-virtual-scroll-viewport>
 
 <h4>Observable data</h4>

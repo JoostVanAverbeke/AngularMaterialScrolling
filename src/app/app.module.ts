@@ -7,6 +7,7 @@ import { SpecDataComponent } from './spec-data/spec-data.component';
 import { BasicsComponent } from './basics/basics.component';
 import { ScrollingStrategyComponent } from './scrolling-strategy/scrolling-strategy.component';
 import { TrackbyComponent } from './trackby/trackby.component';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { TrackbyComponent } from './trackby/trackby.component';
   ],
   imports: [
     BrowserModule,
-    ScrollingModule
+    ScrollingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
